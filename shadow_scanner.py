@@ -6,6 +6,9 @@ import configparser
 from configparser import ConfigParser
 import time
 
+AUTHOR = "ARMIN ZIAIE TABARI"
+VERSION = "v1.0"
+
 #Add all Anti Virus's Vendors in Virustotal website
 ANTIVIRUS =['Bkav','MicroWorld-eScan','CMC','CAT-QuickHeal','McAfee',
            'Malwarebytes','Zillya','SUPERAntiSpyware','TheHacker',
@@ -112,6 +115,16 @@ def print_output(response):
 
 
 if __name__ == '__main__':
+    print("   _____ _               _                  _____                                 ".center(40))
+    print("  / ____| |             | |                / ____|                                ".center(40))
+    print(" | (___ | |__   __ _  __| | _____      __ | (___   ___ __ _ _ __  _ __   ___ _ __ ".center(40))
+    print("  \___ \| '_ \ / _` |/ _` |/ _ \ \ /\ / /  \___ \ / __/ _` | '_ \| '_ \ / _ \ '__|".center(40))
+    print("  ____) | | | | (_| | (_| | (_) \ V  V /   ____) | (_| (_| | | | | | | |  __/ |   ".center(40))
+    print(" |_____/|_| |_|\__,_|\__,_|\___/ \_/\_/   |_____/ \___\__,_|_| |_|_| |_|\___|_|   ".center(40))
+    print(" ")
+    print("Virustotal Online Scanner [Hash]".center(75))
+    print((" "+AUTHOR+ " - "+VERSION+"").center(75))
+
     config = configparser.ConfigParser()
     try:
         config.read('conf.cfg')
