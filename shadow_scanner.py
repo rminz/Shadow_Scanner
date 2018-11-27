@@ -5,6 +5,8 @@ import os
 import configparser
 from configparser import ConfigParser
 import time
+import re
+import argparse
 
 AUTHOR = "ARMIN ZIAIE TABARI"
 VERSION = "v1.0"
@@ -24,7 +26,7 @@ ANTIVIRUS =['Bkav','MicroWorld-eScan','CMC','CAT-QuickHeal','McAfee',
 
 Sleep_Time = 15 #We set wait time to 15 seconds because, Public API only can handle 4 request per minute.
 
-class Colores:
+class Colors:
     REDBG = '\033[41m'
     GREENBG = '\033[42m'
     ORANGEBG = '\033[43m'
@@ -36,12 +38,12 @@ class Colores:
     END = '\033[0m'
 
 class Fields:
-    HASH = Colores.CBLACKBG+"Hash:"+Colores.END+" "
-    VERBOS_MSG = Colores.CBLACKBG+"Verbos MSG:"+Colores.END+" "
-    FileName = Colores.CBLACKBG+"Filename:"+Colores.END+" "
-    Virus = Colores.CBLACKBG+"Virus:"+Colores.END+" "
-    Last = Colores.CBLACKBG+"Scan date:"+Colores.END+" "
-    First = Colores.CBLACKBG+"First time visited:"+Colores.END+" "
+    HASH = Colors.CBLACKBG+"Hash:"+Colors.END+" "
+    VERBOS_MSG = Colors.CBLACKBG+"Verbos MSG:"+Colors.END+" "
+    FileName = Colors.CBLACKBG+"Filename:"+Colors.END+" "
+    Virus = Colors.CBLACKBG+"Virus:"+Colors.END+" "
+    Last = Colors.CBLACKBG+"Scan date:"+Colors.END+" "
+    First = Colors.CBLACKBG+"First time visited:"+Colors.END+" "
 
 def get_score(response):
     try:
@@ -50,11 +52,11 @@ def get_score(response):
         print("error")
 
     if code_resp == 0:
-        return Colores.CWHITEBG+"Unknown"
+        return Colors.CWHITEBG+"Unknown"
     elif 0 < response.json()['positives'] <= 1:
         return '\033[43m'+"Suspicious"
     elif 1 < response.json()['positives'] :
-        return Colores.REDBG+"Malicious"
+        return Colors.REDBG+"Malicious"
     elif response.json()['positives'] == 0:
         return'\033[42m'+"clean"
 
@@ -86,14 +88,14 @@ def get_info(resp):
             if anti in response.get("scans"):
                 if vt_info["positives"] > 0:
                     if response["scans"][anti]["detected"]:
-                        vt_info["virus"] += Colores.VIRUSBG + str(anti) + Colores.END + \
+                        vt_info["virus"] += Colors.VIRUSBG + str(anti) + Colors.END + \
                         " : "+str(response["scans"][anti]["result"])+" "
                 else:
                     vt_info["virus"] = " clean "
     else:
         vt_info["virus"] = " unknown "
 
-    vt_results_head = str(get_score(resp))+" "+str(vt_info["positives"])+" > "+str(vt_info["total"]) + "\n" +Colores.END
+    vt_results_head = str(get_score(resp))+" "+str(vt_info["positives"])+" > "+str(vt_info["total"]) + "\n" +Colors.END
     vt_results_body = str(Fields.HASH) + str(vt_info["hash"])+ " " + \
                         str(Fields.VERBOS_MSG) + str(vt_info["verbose_msg"]) + " " + \
                         str(Fields.FileName) + str(vt_info["filename"]) + " " + \
@@ -110,7 +112,7 @@ def print_output(response):
         print(str(vt_info)+"\n")
 
     except JSONDecodeError as e:
-        print("error")
+        print(Colors.REDBG+"[Error]: "+Colors.END+"Cannot handle the response")
 
 
 
@@ -123,28 +125,42 @@ if __name__ == '__main__':
     print(" |_____/|_| |_|\__,_|\__,_|\___/ \_/\_/   |_____/ \___\__,_|_| |_|_| |_|\___|_|   ".center(40))
     print(" ")
     print("Virustotal Online Scanner [Hash]".center(75))
-    print((" "+AUTHOR+ " - "+VERSION+"").center(75))
+    print((" "+AUTHOR+ " - "+VERSION+"\n").center(75))
 
     config = configparser.ConfigParser()
     try:
         config.read('conf.cfg')
         VT_API_KEY = config['API_KEY']['VT_API_KEY']
+
     except:
-        print('Config file not found!')
+        print(Colors.REDBG+"[Error]: "+Colors.END+"Config file not found")
         sys.exit(1)
 
+    #Check API key format
+    if VT_API_KEY == "" or not re.match(r"^[0-9a-fA-F]{64}$",VT_API_KEY):
+        print(Colors.REDBG+"[Error]: "+Colors.END+"API key format is not correct")
+        sys.exit(1)
+
+    #Add argument to the file
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", help="Input file to process Hash code")
+    arguments = parser.parse_args()
     #Read Hashes from File
-    try:
-        with open('sample_hash.txt','r', newline=None) as file:
-            for line in file:
-                params = {
-                    'apikey': VT_API_KEY,
-                    'resource': line
-                }
-                response = requests.get('https://www.virustotal.com/vtapi/v2/file/report', params=params)
-                print_output(response)
-
-                time.sleep(Sleep_Time)
-    except Exception as excp:
-        print('Cannot read the file')
+    if arguments.i =="":
+        print(Colors.REDBG+"[Error]: "+Colors.END+"Provide an input file for process [Use -i filename]")
         sys.exit(1)
+    else:
+        try:
+            with open(arguments.i,'r', newline=None) as file:
+                for line in file:
+                    params = {
+                        'apikey': VT_API_KEY,
+                        'resource': line
+                        }
+                    response = requests.get('https://www.virustotal.com/vtapi/v2/file/report', params=params)
+                    print_output(response)
+                    #sleep time
+                    time.sleep(Sleep_Time)
+        except Exception as excp:
+            print(Colors.REDBG+"[Error]: "+Colors.END+"Provide an input file for process [Use -i filename]")
+            sys.exit(1)
