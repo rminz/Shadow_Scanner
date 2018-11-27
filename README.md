@@ -1,5 +1,5 @@
-# <img src="https://cdn-images-1.medium.com/max/1600/1*7EUX9QIjq2x1JyFKcjhXsA.png" width="48"><img src="http://bkrservices.com/wp/wp-content/uploads/2016/02/malware.png" width="48"> Shadow Scanner
-This is a simple program coded with python and it use Virustotal api v2 to scan Hashes and get report.
+# <img src="https://cdn-images-1.medium.com/max/1600/1*7EUX9QIjq2x1JyFKcjhXsA.png" width="64"><img src="http://bkrservices.com/wp/wp-content/uploads/2016/02/malware.png" width="48"> Shadow Scanner
+This is a simple program coded with python3 and it use Virustotal API v2 to scan Hashes and get report.
 
 **Usage**
 
@@ -14,7 +14,7 @@ VT_API_KEY = xxxxxxxxxxxxxxxxxxxxxxx
 
 **Output:**
 
-<img src="https://github.com/rminz/Shadow_Scanner/blob/master/Screen_Shot.png" width="600">
+<img src="https://github.com/rminz/Shadow_Scanner/blob/master/Screen_Shot.png" width="800">
 
 **Problem?**
 
