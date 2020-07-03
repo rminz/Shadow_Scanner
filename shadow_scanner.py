@@ -13,7 +13,7 @@ from IPAbuseChecker import check_IP
 from constant import Colors
 
 AUTHOR = "ARMIN ZIAIE TABARI"
-VERSION = "v1.0"
+VERSION = "v2.1"
 
 
 if __name__ == '__main__':
